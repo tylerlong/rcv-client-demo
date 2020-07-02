@@ -1,17 +1,14 @@
 {
+  "license": "MIT",
+  "scripts": {
+    "test": "ts-node -r dotenv-override-true/config src/index.ts"
+  },
   "devDependencies": {
     "@types/node": "^14.0.14",
+    "dotenv-override-true": "^6.2.0",
     "gts": "^2.0.2",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.6",
     "yarn-upgrade-all": "^0.5.2"
-  },
-  "scripts": {
-    "check": "gts check",
-    "clean": "gts clean",
-    "compile": "tsc",
-    "fix": "gts fix",
-    "prepare": "yarn run compile",
-    "pretest": "yarn run compile",
-    "posttest": "yarn run check"
   }
 }
