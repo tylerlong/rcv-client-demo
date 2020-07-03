@@ -33,5 +33,9 @@ const pubNubExtension = new PubNubExtension();
   // const r = await rc.get('/rcvideo/v1/bridges', {default: true});
   // console.log(r.data);
 
+  // // RCV preferences
+  // const r = await rc.get('/rcvideo/v1/account/~/extension/~/preferences');
+  // console.log(r.data);
+
   await rc.revoke();
 })();
