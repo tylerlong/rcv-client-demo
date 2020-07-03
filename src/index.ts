@@ -13,8 +13,13 @@ const rc = new RingCentral({
     password: process.env.RINGCENTRAL_PASSWORD!,
   });
 
-  const extInfo = await rc.restapi().account().extension().get();
-  console.log(JSON.stringify(extInfo, null, 2));
+  // // fetch extension info
+  // const extInfo = await rc.restapi().account().extension().get();
+  // console.log(JSON.stringify(extInfo, null, 2));
+
+  // // fetch default bridge
+  // const r = await rc.get('/rcvideo/v1/bridges', {default: true});
+  // console.log(r.data);
 
   await rc.revoke();
 })();
