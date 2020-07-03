@@ -37,5 +37,17 @@ const pubNubExtension = new PubNubExtension();
   // const r = await rc.get('/rcvideo/v1/account/~/extension/~/preferences');
   // console.log(r.data);
 
+  // // cloud recordings privileges
+  // const r = await rc.get(
+  //   '/rcvideo/v1/account/~/extension/~/privileges/cloudRecordings'
+  // );
+  // console.log(r.data);
+
+  // // get bridge by short id
+  // const r = await rc.get('/rcvideo/v1/bridges', {
+  //   shortId: process.env.RCV_MEETING_ID,
+  // });
+  // console.log(r.data);
+
   await rc.revoke();
 })();
