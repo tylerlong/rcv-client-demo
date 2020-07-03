@@ -5,9 +5,11 @@
   },
   "dependencies": {
     "@types/pubnub": "^4.27.4",
+    "@types/ws": "^7.2.6",
     "pubnub": "^4.28.2",
     "ringcentral-extensible": "^0.8.6",
-    "wait-for-async": "^0.5.0"
+    "wait-for-async": "^0.5.0",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
