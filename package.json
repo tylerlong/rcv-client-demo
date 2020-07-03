@@ -3,6 +3,9 @@
   "scripts": {
     "test": "ts-node -r dotenv-override-true/config src/index.ts"
   },
+  "dependencies": {
+    "ringcentral-extensible": "^0.8.6"
+  },
   "devDependencies": {
     "@types/node": "^14.0.14",
     "dotenv-override-true": "^6.2.0",
