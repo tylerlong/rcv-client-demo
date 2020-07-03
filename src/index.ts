@@ -25,9 +25,8 @@ const pubNubExtension = new PubNubExtension();
   // });
   // await waitFor({interval: 10000});
 
-  // // fetch extension info
-  // const extInfo = await rc.restapi().account().extension().get();
-  // console.log(JSON.stringify(extInfo, null, 2));
+  // fetch extension info
+  const extInfo = await rc.restapi().account().extension().get();
 
   // // fetch default bridge
   // const r = await rc.get('/rcvideo/v1/bridges', {default: true});
@@ -43,11 +42,44 @@ const pubNubExtension = new PubNubExtension();
   // );
   // console.log(r.data);
 
-  // // get bridge by short id
-  // const r = await rc.get('/rcvideo/v1/bridges', {
-  //   shortId: process.env.RCV_MEETING_ID,
-  // });
-  // console.log(r.data);
+  // get bridge by short id
+  const bridge = (
+    await rc.get('/rcvideo/v1/bridges', {
+      shortId: process.env.RCV_MEETING_ID,
+    })
+  ).data;
+  console.log(bridge);
+
+  // create new call or get current call
+  const call = (
+    await rc.post(`/rcvideo/v1/bridges/${bridge.id}/meetings`, {
+      bridgeId: bridge.id,
+      participants: [
+        {
+          displayName: extInfo.name,
+          bridgeId: bridge.id,
+          streams: [],
+          sessions: [
+            {
+              bridgeId: bridge.id,
+              localMute: true,
+              localMuteVideo: true,
+              userAgent: 'rcv/web/0.10',
+              operatingSystem: 'macos',
+            },
+          ],
+          localMute: true,
+          localMuteVideo: true,
+          deleteReason: null,
+          hasInactiveSessions: false,
+          onHold: false,
+          joinedAudio: false,
+        },
+      ],
+      meetingPassword: process.env.RCV_MEETING_PASSWORD,
+    })
+  ).data;
+  console.log(call);
 
   await rc.revoke();
 })();
