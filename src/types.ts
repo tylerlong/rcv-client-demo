@@ -4,4 +4,5 @@ export type Bridge = {
 
 export type Meeting = {
   id: string;
+  wsConnectionUrl: string;
 };

@@ -1,4 +1,6 @@
 import RingCentral from '@rc-ex/core';
+import WebSocket from 'isomorphic-ws';
+
 import {Bridge, Meeting} from './types';
 
 const rc = new RingCentral({
@@ -20,7 +22,6 @@ rc.token = {
     {
       participants: [
         {
-          displayName: 'Test User',
           sessions: [
             {
               userAgent: 'rcv/web/0.10',
@@ -39,4 +40,18 @@ rc.token = {
   );
   const meeting = r.data as Meeting;
   console.log(JSON.stringify(meeting, null, 2));
+
+  const ws = new WebSocket(meeting.wsConnectionUrl);
+  ws.addEventListener('open', (...args) => {
+    console.log('ws open', ...args);
+  });
+  ws.addEventListener('error', (...args) => {
+    console.log('ws error', ...args);
+  });
+  ws.addEventListener('message', (...args) => {
+    console.log('ws message', ...args);
+  });
+  ws.addEventListener('close', (...args) => {
+    console.log('ws close', ...args);
+  });
 })();
