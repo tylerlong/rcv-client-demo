@@ -1,9 +1,12 @@
 {
   "license": "MIT",
+  "private": true,
   "scripts": {
     "test": "ts-node -r dotenv-override-true/config src/index.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@rc-ex/core": "^0.10.5"
+  },
   "devDependencies": {
     "@types/node": "^16.11.7",
     "dotenv-override-true": "^6.2.2",
