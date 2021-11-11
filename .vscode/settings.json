@@ -1,5 +1,4 @@
 {
-    "standard.enable": false,
     "filewatcher.commands": [
       {
         "match": "\\.ts",
