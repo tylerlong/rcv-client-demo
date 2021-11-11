@@ -8,6 +8,9 @@ rc.token = {
 };
 
 (async () => {
-  const extInfo = await rc.restapi().account().extension().get();
-  console.log(extInfo);
+  const r = await rc.get('/rcvideo/v1/bridges', {
+    shortId: process.env.RCV_MEETING_SHORT_ID,
+  });
+  const bridge = r.data;
+  console.log(JSON.stringify(bridge, null, 2));
 })();
