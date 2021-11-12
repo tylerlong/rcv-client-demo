@@ -8,6 +8,11 @@ class WebSocketManager {
 
   constructor(connectionUrl: string) {
     this.ws = new WebSocket(connectionUrl);
+
+    this.ws.addEventListener('message', e => {
+      console.log('******** inbound message ********');
+      console.log(JSON.stringify(JSON.parse(e.data as string), null, 2) + '\n');
+    });
   }
 
   async send(data: WebSocketReqMessage) {
@@ -17,7 +22,10 @@ class WebSocketManager {
         condition: () => this.ws.readyState === WebSocket.OPEN,
       });
     }
-    this.ws.send(JSON.stringify(data));
+    const message = JSON.stringify(data, null, 2);
+    console.log('******** outbound message ********');
+    console.log(message + '\n');
+    this.ws.send(message);
   }
 
   async waitForMessage<T>(

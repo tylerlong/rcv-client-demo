@@ -19,7 +19,6 @@ rc.token = {
     shortId: process.env.RCV_MEETING_SHORT_ID,
   });
   const bridge = r.data as Bridge;
-  console.log(JSON.stringify(bridge, null, 2));
 
   r = await rc.post(
     `/rcvideo/v1/bridges/${bridge.id}/meetings`,
@@ -43,7 +42,6 @@ rc.token = {
     }
   );
   const meeting = r.data as Meeting;
-  console.log(JSON.stringify(meeting, null, 2));
 
   const participant = meeting.participants[0];
   const session = participant.sessions[0];
@@ -51,7 +49,7 @@ rc.token = {
   webSocketManager = new WebSocketManager(meeting.wsConnectionUrl);
   await webSocketManager.send({
     req_src: 'webcli',
-    req_seq: req_seq++,
+    req_seq: req_seq,
     tx_ts: Date.now() - baseTime,
     event: 'create_req',
     body: {
@@ -82,5 +80,17 @@ rc.token = {
     await webSocketManager.waitForMessage<CreateRespMessage>(respMessage => {
       return respMessage.event === 'create_resp';
     });
-  console.log(JSON.stringify(createRespMessage, null, 2));
+
+  await webSocketManager.send({
+    req_src: 'webcli',
+    req_seq: req_seq++,
+    rx_ts: Date.now() - baseTime,
+    tx_ts: Date.now() - baseTime,
+    success: true,
+    event: 'create_ack',
+    body: {},
+    version: 1,
+    type: 'session',
+    id: session.id,
+  });
 })();
