@@ -98,11 +98,11 @@ rc.token = {
     tx_ts: Date.now() - baseTime,
     event: 'create_req',
     body: {
-      max_remote_audio: 3,
+      max_remote_audio: 2,
       max_remote_video: [
         {
-          quality: 1,
-          slots: 0,
+          quality: 2,
+          slots: 2,
         },
       ],
       conference_id: '',
