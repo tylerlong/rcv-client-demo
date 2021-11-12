@@ -154,6 +154,19 @@ rc.token = {
           type: 'session',
           id: session.id,
         });
+      } else if (inboundMessage.event === 'as_report_req') {
+        webSocketManager.send({
+          req_src: 'sfu',
+          req_seq: inboundMessage.req_seq,
+          rx_ts: Date.now() - baseTime,
+          tx_ts: Date.now() - baseTime,
+          success: true,
+          event: 'as_report_resp',
+          body: {},
+          version: 1,
+          type: 'session',
+          id: session.id,
+        });
       }
     }
   );
