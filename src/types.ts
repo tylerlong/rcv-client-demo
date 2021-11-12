@@ -38,18 +38,22 @@ export type OutboundMessage = WebSocketMessage & {
 
 export type InboundMessage = WebSocketMessage & {};
 
-export type CreateRespMessage = InboundMessage & {
-  body: CreateRespMessageBody;
-};
-
-export type CreateRespMessageBody = {
-  sdp: string;
-  ice_servers: IceServer[];
-  media_stat_interval: number;
+export type CreateResponse = InboundMessage & {
+  body: {
+    sdp: string;
+    ice_servers: IceServer[];
+    media_stat_interval: number;
+  };
 };
 
 export type IceServer = {
   username: string;
   credential: string;
   urls: string[];
+};
+
+export type UpdateResponse = InboundMessage & {
+  body: {
+    sdp: string;
+  };
 };
