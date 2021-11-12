@@ -146,7 +146,8 @@ rc.token = {
   // WebRTC peer connection
   const peerConnection = new RTCPeerConnection({
     iceServers: createResponse.body.ice_servers,
-  });
+    sdpSemantics: 'plan-b',
+  } as any);
   const userMedia = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: true,
