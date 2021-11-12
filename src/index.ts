@@ -20,6 +20,10 @@ rc.token = {
   access_token: process.env.RINGCENTRAL_ACCESS_TOKEN,
 };
 
+const heading = document.createElement('h1') as HTMLHeadingElement;
+heading.textContent = 'RCV Client Demo';
+document.body.appendChild(heading);
+
 (async () => {
   // fetch bridge
   let r = await rc.get('/rcvideo/v1/bridges', {
@@ -209,7 +213,7 @@ rc.token = {
       console.log(e);
       const videoElement = document.createElement('video') as HTMLVideoElement;
       videoElement.autoplay = true;
-      videoElement.controls = true;
+      videoElement.setAttribute('width', '800');
       document.body.appendChild(videoElement);
       videoElement.srcObject = e.streams[0];
       console.log(e.streams[0]);
