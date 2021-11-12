@@ -1,4 +1,5 @@
 import RingCentral from '@rc-ex/core';
+import DebugExtension from '@rc-ex/debug';
 
 import WebSocketManager from './websocket-manager';
 import {Bridge, CreateRespMessage, Meeting} from './types';
@@ -15,6 +16,10 @@ rc.token = {
 };
 
 (async () => {
+  const debugExtension = new DebugExtension();
+  debugExtension.disable(); // comment out this line to show rest api debug information.
+  await rc.installExtension(debugExtension);
+
   let r = await rc.get('/rcvideo/v1/bridges', {
     shortId: process.env.RCV_MEETING_SHORT_ID,
   });
