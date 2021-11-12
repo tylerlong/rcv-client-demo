@@ -107,11 +107,6 @@
     form-data "^4.0.0"
     qs "^6.10.1"
 
-"@rc-ex/debug@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@rc-ex/debug/-/debug-0.8.1.tgz#2c588b3cf07bb21f75768fca7fddb9ffa28cb9d3"
-  integrity sha512-hJRMvgXz7/f0sU+2Cy+3krgtPYm3PNd3at/m+kPh2mWxvJPGIOS+hxMzRqJhBZGcVEEGlYsRmpTlTohFtQl/5w==
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"

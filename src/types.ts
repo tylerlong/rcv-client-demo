@@ -32,7 +32,7 @@ export type CreateRespMessage = WebSocketRespMessage & {
 
 export type CreateRespMessageBody = {
   sdp: string;
-  ice_servers: IceServer;
+  ice_servers: IceServer[];
   media_stat_interval: number;
 };
 
