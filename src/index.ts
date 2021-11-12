@@ -1,11 +1,17 @@
 import RingCentral from '@rc-ex/core';
 
 import WebSocketManager from './websocket-manager';
-import {Bridge, CreateRespMessage, InboundMessage, Meeting} from './types';
+import {
+  Bridge,
+  CreateResponse,
+  InboundMessage,
+  Meeting,
+  UpdateResponse,
+} from './types';
 import waitFor from 'wait-for-async';
 
 const baseTime = Date.now();
-let req_seq = 0;
+let req_seq = -1;
 let webSocketManager: WebSocketManager;
 
 const rc = new RingCentral({
@@ -50,94 +56,9 @@ rc.token = {
   const participant = meeting.participants[0];
   const session = participant.sessions[0];
 
-  // join meeting
   webSocketManager = new WebSocketManager(meeting.wsConnectionUrl);
-  await webSocketManager.send({
-    req_src: 'webcli',
-    req_seq: req_seq,
-    tx_ts: Date.now() - baseTime,
-    event: 'create_req',
-    body: {
-      max_remote_audio: 0,
-      max_remote_video: [
-        {
-          quality: 1,
-          slots: 0,
-        },
-      ],
-      conference_id: '',
-      sdp_semantics: 'plan-b',
-      token: session.token,
-      meta: {
-        meeting_id: bridge.shortId,
-        user_agent:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
-        x_user_agent:
-          'RCAppRCVWeb/21.3.33.0 (RingCentral; macos/10.15; rev.aaebe132)',
-      },
-    },
-    version: 1,
-    type: 'session',
-    id: session.id,
-  });
 
-  // join meeting response
-  const createRespMessage =
-    await webSocketManager.waitForMessage<CreateRespMessage>(respMessage => {
-      return respMessage.event === 'create_resp';
-    });
-
-  // join meeting acknowledge
-  await webSocketManager.send({
-    req_src: 'webcli',
-    req_seq: req_seq++,
-    rx_ts: Date.now() - baseTime,
-    tx_ts: Date.now() - baseTime,
-    success: true,
-    event: 'create_ack',
-    body: {},
-    version: 1,
-    type: 'session',
-    id: session.id,
-  });
-
-  // WebRTC peer connection
-  const peerConnection = new RTCPeerConnection({
-    iceServers: createRespMessage.body.ice_servers,
-  });
-  const userMedia = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: true,
-  });
-  for (const track of userMedia.getTracks()) {
-    peerConnection.addTrack(track, userMedia);
-  }
-  const offer = await peerConnection.createOffer();
-  peerConnection.setLocalDescription(offer);
-
-  await waitFor({interval: 1000}); // wait for 1 second, just in case anything is not ready
-
-  // send offer
-  await webSocketManager.send({
-    req_src: 'webcli',
-    req_seq: req_seq++,
-    tx_ts: Date.now() - baseTime,
-    event: 'update_req',
-    body: {
-      sdp: peerConnection.localDescription!.sdp,
-      streams: [
-        {
-          id: userMedia.id,
-          msid: userMedia.id,
-        },
-      ],
-    },
-    version: 1,
-    type: 'session',
-    id: session.id,
-  });
-
-  // respond to network_status_req
+  // auto respond to message from sfu
   webSocketManager.on(
     WebSocketManager.INBOUND_MESSAGE,
     (inboundMessage: InboundMessage) => {
@@ -169,5 +90,113 @@ rc.token = {
         });
       }
     }
+  );
+
+  // join meeting
+  await webSocketManager.send({
+    req_src: 'webcli',
+    req_seq: ++req_seq,
+    tx_ts: Date.now() - baseTime,
+    event: 'create_req',
+    body: {
+      max_remote_audio: 0,
+      max_remote_video: [
+        {
+          quality: 1,
+          slots: 0,
+        },
+      ],
+      conference_id: '',
+      sdp_semantics: 'plan-b',
+      token: session.token,
+      meta: {
+        meeting_id: bridge.shortId,
+        user_agent:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+        x_user_agent:
+          'RCAppRCVWeb/21.3.33.0 (RingCentral; macos/10.15; rev.aaebe132)',
+      },
+    },
+    version: 1,
+    type: 'session',
+    id: session.id,
+  });
+
+  // join meeting response
+  const createResponse = await webSocketManager.waitForMessage<CreateResponse>(
+    respMessage => {
+      return respMessage.event === 'create_resp';
+    }
+  );
+
+  // join meeting acknowledge
+  await webSocketManager.send({
+    req_src: 'webcli',
+    req_seq: req_seq,
+    rx_ts: Date.now() - baseTime,
+    tx_ts: Date.now() - baseTime,
+    success: true,
+    event: 'create_ack',
+    body: {},
+    version: 1,
+    type: 'session',
+    id: session.id,
+  });
+
+  // WebRTC peer connection
+  const peerConnection = new RTCPeerConnection({
+    iceServers: createResponse.body.ice_servers,
+  });
+  const userMedia = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+  for (const track of userMedia.getTracks()) {
+    peerConnection.addTrack(track, userMedia);
+  }
+  const offer = await peerConnection.createOffer();
+  peerConnection.setLocalDescription(offer);
+
+  await waitFor({interval: 1000}); // wait for 1 second, just in case anything is not ready
+
+  // send offer
+  await webSocketManager.send({
+    req_src: 'webcli',
+    req_seq: ++req_seq,
+    tx_ts: Date.now() - baseTime,
+    event: 'update_req',
+    body: {
+      sdp: peerConnection.localDescription!.sdp,
+      streams: [
+        {
+          id: userMedia.id,
+          msid: userMedia.id,
+        },
+      ],
+    },
+    version: 1,
+    type: 'session',
+    id: session.id,
+  });
+
+  const temp_seq = req_seq;
+  const updateResponse = await webSocketManager.waitForMessage<UpdateResponse>(
+    inboundMessage => {
+      return (
+        inboundMessage.event === 'update_resp' &&
+        inboundMessage.req_seq === temp_seq
+      );
+    }
+  );
+
+  peerConnection.ontrack = e => {
+    console.log(e);
+  };
+
+  peerConnection.setRemoteDescription(
+    new RTCSessionDescription({
+      type: 'answer',
+      sdp: updateResponse.body.sdp,
+    })
   );
 })();
