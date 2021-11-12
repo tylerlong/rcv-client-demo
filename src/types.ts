@@ -20,13 +20,25 @@ export type Session = {
   token: string;
 };
 
-export type WebSocketReqMessage = {};
-
-export type WebSocketRespMessage = {
+export type WebSocketMessage = {
   event: string;
+  req_seq: number;
+  req_src: 'sfu' | 'webcli';
+  success?: boolean;
+  body: {};
+  version: 1;
+  type: 'session';
+  id: string;
 };
 
-export type CreateRespMessage = WebSocketRespMessage & {
+export type OutboundMessage = WebSocketMessage & {
+  rx_ts?: number;
+  tx_ts: number;
+};
+
+export type InboundMessage = WebSocketMessage & {};
+
+export type CreateRespMessage = InboundMessage & {
   body: CreateRespMessageBody;
 };
 

@@ -1,21 +1,27 @@
+import EventEmitter from 'events';
 import WebSocket from 'isomorphic-ws';
 import waitFor from 'wait-for-async';
 
-import {WebSocketReqMessage, WebSocketRespMessage} from './types';
+import {OutboundMessage, InboundMessage} from './types';
 
-class WebSocketManager {
+class WebSocketManager extends EventEmitter {
   ws: WebSocket;
 
+  static INBOUND_MESSAGE = 'INBOUND_MESSAGE';
+
   constructor(connectionUrl: string) {
+    super();
     this.ws = new WebSocket(connectionUrl);
 
     this.ws.addEventListener('message', e => {
       console.log('******** inbound message ********');
-      console.log(JSON.stringify(JSON.parse(e.data as string), null, 2) + '\n');
+      const inboundMessage: InboundMessage = JSON.parse(e.data as string);
+      console.log(JSON.stringify(inboundMessage, null, 2) + '\n');
+      this.emit(WebSocketManager.INBOUND_MESSAGE, inboundMessage);
     });
   }
 
-  async send(data: WebSocketReqMessage) {
+  async send(data: OutboundMessage) {
     if (this.ws.readyState !== WebSocket.OPEN) {
       await waitFor({
         interval: 100,
@@ -29,9 +35,7 @@ class WebSocketManager {
   }
 
   async waitForMessage<T>(
-    checker:
-      | ((message: WebSocketRespMessage) => boolean)
-      | undefined = undefined
+    checker: ((message: InboundMessage) => boolean) | undefined = undefined
   ): Promise<T> {
     return new Promise<T>(resolve => {
       const messageListener = (e: WebSocket.MessageEvent) => {

@@ -1,7 +1,7 @@
 import RingCentral from '@rc-ex/core';
 
 import WebSocketManager from './websocket-manager';
-import {Bridge, CreateRespMessage, Meeting} from './types';
+import {Bridge, CreateRespMessage, InboundMessage, Meeting} from './types';
 import waitFor from 'wait-for-async';
 
 const baseTime = Date.now();
@@ -105,7 +105,6 @@ rc.token = {
   const peerConnection = new RTCPeerConnection({
     iceServers: createRespMessage.body.ice_servers,
   });
-
   const userMedia = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: true,
@@ -113,12 +112,12 @@ rc.token = {
   for (const track of userMedia.getTracks()) {
     peerConnection.addTrack(track, userMedia);
   }
-
   const offer = await peerConnection.createOffer();
   peerConnection.setLocalDescription(offer);
 
   await waitFor({interval: 1000}); // wait for 1 second, just in case anything is not ready
 
+  // send offer
   await webSocketManager.send({
     req_src: 'webcli',
     req_seq: req_seq++,
@@ -137,4 +136,25 @@ rc.token = {
     type: 'session',
     id: session.id,
   });
+
+  // respond to network_status_req
+  webSocketManager.on(
+    WebSocketManager.INBOUND_MESSAGE,
+    (inboundMessage: InboundMessage) => {
+      if (inboundMessage.event === 'network_status_req') {
+        webSocketManager.send({
+          req_src: 'sfu',
+          req_seq: inboundMessage.req_seq,
+          rx_ts: Date.now() - baseTime,
+          tx_ts: Date.now() - baseTime,
+          success: true,
+          event: 'network_status_resp',
+          body: {},
+          version: 1,
+          type: 'session',
+          id: session.id,
+        });
+      }
+    }
+  );
 })();
