@@ -122,16 +122,19 @@ rc.token = {
   });
 
   // join meeting response
+  const createSeq = req_seq;
   const createResponse = await webSocketManager.waitForMessage<CreateResponse>(
     respMessage => {
-      return respMessage.event === 'create_resp';
+      return (
+        respMessage.event === 'create_resp' && respMessage.req_seq === createSeq
+      );
     }
   );
 
   // join meeting acknowledge
   await webSocketManager.send({
     req_src: 'webcli',
-    req_seq: req_seq,
+    req_seq: createSeq,
     rx_ts: Date.now() - baseTime,
     tx_ts: Date.now() - baseTime,
     success: true,
@@ -147,6 +150,7 @@ rc.token = {
     iceServers: createResponse.body.ice_servers,
     sdpSemantics: 'plan-b',
   } as any);
+
   const userMedia = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: true,
@@ -154,6 +158,7 @@ rc.token = {
   for (const track of userMedia.getTracks()) {
     peerConnection.addTrack(track, userMedia);
   }
+
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
 
@@ -177,15 +182,27 @@ rc.token = {
     id: session.id,
   });
 
-  const temp_seq = req_seq;
+  const updateSeq = req_seq;
   const updateResponse = await webSocketManager.waitForMessage<UpdateResponse>(
     inboundMessage => {
       return (
         inboundMessage.event === 'update_resp' &&
-        inboundMessage.req_seq === temp_seq
+        inboundMessage.req_seq === updateSeq
       );
     }
   );
+  await webSocketManager.send({
+    req_src: 'webcli',
+    req_seq: updateSeq,
+    rx_ts: Date.now() - baseTime,
+    tx_ts: Date.now() - baseTime,
+    success: true,
+    event: 'update_ack',
+    body: {},
+    version: 1,
+    type: 'session',
+    id: session.id,
+  });
 
   peerConnection.ontrack = e => {
     if (e.track.kind === 'video') {
