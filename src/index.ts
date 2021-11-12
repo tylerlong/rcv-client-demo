@@ -8,7 +8,6 @@ import {
   Meeting,
   UpdateResponse,
 } from './types';
-import waitFor from 'wait-for-async';
 
 const baseTime = Date.now();
 let req_seq = -1;
@@ -156,9 +155,7 @@ rc.token = {
     peerConnection.addTrack(track, userMedia);
   }
   const offer = await peerConnection.createOffer();
-  peerConnection.setLocalDescription(offer);
-
-  await waitFor({interval: 1000}); // wait for 1 second, just in case anything is not ready
+  await peerConnection.setLocalDescription(offer);
 
   // send offer
   await webSocketManager.send({
@@ -191,10 +188,18 @@ rc.token = {
   );
 
   peerConnection.ontrack = e => {
-    console.log(e);
+    if (e.track.kind === 'video') {
+      console.log(e);
+      const videoElement = document.createElement('video') as HTMLVideoElement;
+      videoElement.autoplay = true;
+      videoElement.controls = true;
+      document.body.appendChild(videoElement);
+      videoElement.srcObject = e.streams[0];
+      console.log(e.streams[0]);
+    }
   };
 
-  peerConnection.setRemoteDescription(
+  await peerConnection.setRemoteDescription(
     new RTCSessionDescription({
       type: 'answer',
       sdp: updateResponse.body.sdp,

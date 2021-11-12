@@ -24,10 +24,6 @@ yarn serve
 Visit http://localhost:8080/.
 
 
-### Run as a node.js app
+### Run as a Node.js app
 
-It is still work in progress
-
-```
-yarn test
-```
+It is NOT supported yet. But there is a plan to support it.
