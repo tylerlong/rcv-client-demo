@@ -20,11 +20,17 @@ export type Session = {
   token: string;
 };
 
-export type CreateRespEvent = {
-  body: CreateRespEventBody;
+export type WebSocketReqMessage = {};
+
+export type WebSocketRespMessage = {
+  event: string;
 };
 
-export type CreateRespEventBody = {
+export type CreateRespMessage = WebSocketRespMessage & {
+  body: CreateRespMessageBody;
+};
+
+export type CreateRespMessageBody = {
   sdp: string;
   ice_servers: IceServer;
   media_stat_interval: number;

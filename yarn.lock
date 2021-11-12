@@ -2212,6 +2212,11 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
+wait-for-async@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/wait-for-async/-/wait-for-async-0.6.0.tgz#b3a50eaef3dcbc18cbc52987d7ac82e515023781"
+  integrity sha512-jf5TFOroKPeRq/LZ1PQRFsN3xLw8H002UAikKLjv/km0YZ1okTbLw4gxmFt6etu2jfzsBuzVJjvSuM92/THqFg==
+
 which@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/which/-/which-2.0.2.tgz#7c6a8dd0a636a0327e10b59c9286eee93f3f51b1"
