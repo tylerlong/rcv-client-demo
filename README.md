@@ -1,6 +1,6 @@
 # RCV Client demo
 
-This project tries to build a RCV client from scratch.
+A RCV client demo which can send and receive video/audio streams.
 
 
 ## Setup
@@ -13,6 +13,20 @@ Edit `.env` file to specify credentials.
 
 
 ## Run
+
+### Run a browser app
+
+```
+yarn serve
+```
+
+
+Visit http://localhost:8080/.
+
+
+### Run as a node.js app
+
+It is still work in progress
 
 ```
 yarn test
