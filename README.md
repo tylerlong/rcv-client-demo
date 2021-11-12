@@ -27,3 +27,9 @@ Visit http://localhost:8080/.
 ### Run as a Node.js app
 
 It is NOT supported yet. But there is a plan to support it.
+
+
+
+## Notes
+
+- Don't forget to set the new meeting ID if you start a new meeting!

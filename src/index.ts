@@ -98,7 +98,7 @@ rc.token = {
     tx_ts: Date.now() - baseTime,
     event: 'create_req',
     body: {
-      max_remote_audio: 0,
+      max_remote_audio: 3,
       max_remote_video: [
         {
           quality: 1,
